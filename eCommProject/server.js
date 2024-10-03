@@ -21,37 +21,37 @@ mongoose.connect(db_config.DB_URL)
 
 const db = mongoose.connection
 
-db.on("error",() => {
+db.on("error", () => {
     console.log("Error while connection to mongo database")
 })
 
-db.once("open" ,() => {
+db.once("open", () => {
     console.log("Connected to mongodb")
     init()
 })
 
-async function init(){
-    try{
-        let user = await user_model.findOne({userId : "admin"})
-        if(user){
+async function init() {
+    try {
+        let user = await user_model.findOne({ userId: "admin" })
+        if (user) {
             console.log("Admin is already present")
             return
         }
-    }catch(err){
+    } catch (err) {
         console.log("Error while create admin", err)
     }
-    
 
-    try{
+
+    try {
         user = await user_model.create({
-            name : "Sarang",
-            userId : "admin",
-            email : "instasarang@gmail.com",
-            userType : "ADMIN",
-            password  : bcrypt.hashSync("Welcome1" ,8)
+            name: "Sarang",
+            userId: "admin",
+            email: "instasarang@gmail.com",
+            userType: "ADMIN",
+            password: bcrypt.hashSync("Welcome1", 8)
         })
         console.log("Admin created", user)
-    }catch(err){
+    } catch (err) {
         console.log("Error while create admin", err)
     }
 
@@ -65,8 +65,8 @@ async function init(){
  */
 
 
-require("./routes/auth.route")(app) 
- //calling routes and passing app object 
+require("./routes/auth.route")(app)
+//calling routes and passing app object 
 
 
 /**

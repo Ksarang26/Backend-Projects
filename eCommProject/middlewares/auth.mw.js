@@ -1,10 +1,10 @@
-const user_model = require("../models/user.model")
+const userSchema = require("../models/user.model")
 
 /**
  * create a mw will check if the request body is proper and correct
  */
 
-const verifySignUpBody = async(res, req, next) => {
+const verifySignUpBody = async(req, res, next) => {
     try{
         //check for the name
         if(!req.body.name){
@@ -26,7 +26,7 @@ const verifySignUpBody = async(res, req, next) => {
         }
 
         //check if the user with the same userId is already
-        const user = await user_model.findOne({userId: req.body.userId})
+         
         
         if(user){
             return res.status(400).send({
@@ -44,6 +44,22 @@ const verifySignUpBody = async(res, req, next) => {
     }
 }
 
+const verifySignInBody = async(req, res, next) => {
+
+    if(!req.body.userId) {
+        return res.status(400).send({
+            message : "userId is not provided"
+        })
+    }
+
+    if(!req.body.password) {
+        return res.status(400).send({
+            message : "password is not provided"
+        })
+    }
+}
+
 module.exports = {
-    verifySignUpBody : verifySignUpBody
+    verifySignUpBody : verifySignUpBody,
+    verifySignInBody : verifySignInBody
 }

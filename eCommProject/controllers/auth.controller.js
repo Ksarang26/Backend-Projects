@@ -2,7 +2,7 @@
  * i need to write the controller / logic to register a user
  */
 const bcrypt = require("bcryptjs")
-const user_model = require("../models/user.model")
+const userSchema = require("../models/user.model")
 const jwt = require("jsonwebtoken")
 const secret = require("../configs/auth.config")
 
@@ -25,7 +25,7 @@ exports.signup = async(req,res) => {
 
     try{
 
-        const user_created = await user_model.create(userObj)
+        const user_created = await userSchema.create(userObj)
         /**
          * return this user
          */
@@ -48,10 +48,10 @@ exports.signup = async(req,res) => {
     //3.Return the response back to the user
 }
 
-exports.signin = async (res, req)=>{
+exports.signin = async (req, res)=>{
 
     //check if the userID in the system
-    const user = await user_model.findOne({userId : req.body.userId})
+    const user = await userSchema.findOne({userId : req.body.userId})
 
     if(user == null){
         return res.status(400).send({
