@@ -66,6 +66,7 @@ async function init() {
 
 
 require("./routes/auth.route")(app)
+require("./routes/category.routes.js")(app)
 //calling routes and passing app object 
 
 

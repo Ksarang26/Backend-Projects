@@ -1,4 +1,6 @@
-const userSchema = require("../models/user.model")
+const user_model = require("../models/user.model")
+const jwt = require("jsonwebtoken")
+const auth_config = require("../configs/auth.config")
 
 /**
  * create a mw will check if the request body is proper and correct
@@ -26,9 +28,9 @@ const verifySignUpBody = async(req, res, next) => {
         }
 
         //check if the user with the same userId is already
+        const user = await user_model.findOne({userId : req.body.userId})
          
-        
-        if(user){
+        if(!user){
             return res.status(400).send({
                 message: "Failed ! UserId with same userId is already present"
             })
@@ -57,9 +59,50 @@ const verifySignInBody = async(req, res, next) => {
             message : "password is not provided"
         })
     }
+    next()
+}
+
+const verifyToken = (req, res, next) =>{
+    //check if the token is present in the header
+    const token = req.headers['x-access-token']
+
+    if(!token){
+        return res.status(403).send({
+            message : "No token found : unAuthorized"
+        })
+    }
+    //if it's the valid token
+    jwt.verify(token, auth_config.secret ,async (err, decoded) => {
+        if(err){
+            return res.status(401).send({
+                message : "UnAuthorized !"
+            })
+        }
+        const user = await user_model.findOne({userId : decoded.id})
+        if(!user){
+            return res.status(400).send({
+                message : "UnAuthrized, this user for this tokendoesn't exist"
+            })
+        }
+        next()
+    })
+    //then move to next step
+}
+
+const isAdmin = (req, res, next) => {
+    const user = req.user
+    if(user && user.userType == "ADMIN"){
+        next()
+    }else{
+        return res.status(403).send({
+            message:"Only ADMIN users are allowed to access"
+        })
+    }
 }
 
 module.exports = {
     verifySignUpBody : verifySignUpBody,
-    verifySignInBody : verifySignInBody
+    verifySignInBody : verifySignInBody,
+    verifyToken : verifyToken,
+    isAdmin : isAdmin
 }
